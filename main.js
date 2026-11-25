@@ -1,248 +1,230 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Banco de carros padrão iniciais caso o storage esteja vazio
-    const defaultCars = [
-        { brand: "Chevrolet", model: "Onix", year: 2021 },
-        { brand: "Toyota", model: "Corolla", year: 2022 }
-    ];
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-    // Banco de dados inicial detalhado com reparos e custos
-    const baseDamageDatabase = [
-        { 
-            model: "Onix", 
-            damage: "para-choque dianteiro riscado", 
-            severity: "Leve", 
-            cost: "R$ 450,00", 
-            repair: "Lixamento da área afetada, aplicação de primer, pintura automotiva na cor do veículo e polimento final." 
-        },
-        { 
-            model: "Onix", 
-            damage: "farol quebrado", 
-            severity: "Médio", 
-            cost: "R$ 800,00", 
-            repair: "Remoção da grade e para-choque parcial, substituição do conjunto óptico danificado e regulagem do facho de luz." 
-        },
-        { 
-            model: "Corolla", 
-            damage: "amassado na lateral porta", 
-            severity: "Alto", 
-            cost: "R$ 1.200,00", 
-            repair: "Desamassamento por funilaria tradicional ou martelinho de ouro (dependendo da profundidade), preparo de superfície e pintura completa da peça." 
-        },
-        { 
-            model: "Corolla", 
-            damage: "retrovisor solto", 
-            severity: "Leve", 
-            cost: "R$ 300,00", 
-            repair: "Desmontagem da capa interna da porta, reaperto dos parafusos de fixação estrutural ou substituição da base plástica quebrada." 
-        }
-    ];
+body {
+    background-color: #0f172a;
+    color: #f8fafc;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
 
-    // Gerenciador de Carros (LocalStorage)
-    function getStoredCars() {
-        const stored = localStorage.getItem('user_custom_cars');
-        if (!stored) {
-            localStorage.setItem('user_custom_cars', JSON.stringify(defaultCars));
-            return defaultCars;
-        }
-        return JSON.parse(stored);
-    }
+/* Fundo Animado - Carros Voando */
+.flying-cars-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
 
-    function saveCarToStorage(car) {
-        const cars = getStoredCars();
-        // Verificar se já existe modelo igual
-        const exists = cars.some(c => c.model.toLowerCase() === car.model.toLowerCase());
-        if (!exists) {
-            cars.push(car);
-            localStorage.setItem('user_custom_cars', JSON.stringify(cars));
-            return true;
-        }
-        return false;
-    }
+.car-fly {
+    position: absolute;
+    color: rgba(56, 189, 248, 0.12);
+    font-size: 3rem;
+    animation: flyAcross 14s linear infinite;
+}
 
-    function updateCarSelect() {
-        const select = document.getElementById('select-car-model');
-        const cars = getStoredCars();
-        
-        // Salva o valor selecionado atual se houver
-        const currentVal = select.value;
+.car-1 { top: 15%; animation-duration: 16s; animation-delay: 0s; }
+.car-2 { top: 45%; animation-duration: 10s; animation-delay: 3s; font-size: 2.5rem; }
+.car-3 { top: 75%; animation-duration: 20s; animation-delay: 1s; font-size: 3.5rem; }
 
-        select.innerHTML = '<option value="">Selecione o modelo do carro</option>';
-        
-        cars.forEach(c => {
-            const option = document.createElement('option');
-            option.value = c.model;
-            option.textContent = `${c.brand} ${c.model} (${c.year})`;
-            select.appendChild(option);
-        });
+@keyframes flyAcross {
+    0% { transform: translateX(-150px) rotate(0deg); opacity: 0; }
+    15% { opacity: 0.25; }
+    85% { opacity: 0.25; }
+    100% { transform: translateX(calc(100vw + 150px)) rotate(5deg); opacity: 0; }
+}
 
-        if (currentVal) {
-            select.value = currentVal;
-        }
-    }
+.container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+}
 
-    // Inicializar o seletor logo ao carregar a página
-    updateCarSelect();
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
 
-    // Evento de envio do formulário de cadastro de carro
-    const carForm = document.getElementById('car-form');
-    carForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const brand = document.getElementById('car-brand').value.trim();
-        const model = document.getElementById('car-model').value.trim();
-        const year = document.getElementById('car-year').value.trim();
+header h1 {
+    font-size: 2.2rem;
+    color: #38bdf8;
+    margin-bottom: 10px;
+}
 
-        if (brand && model && year) {
-            const added = saveCarToStorage({ brand, model, year });
-            if (added) {
-                updateCarSelect();
-                document.getElementById('select-car-model').value = model; // Seleciona automaticamente o recém criado
-                carForm.reset();
-                alert('Modelo de carro salvo com sucesso e disponível para pesquisa!');
-            } else {
-                alert('Este modelo já está cadastrado na lista.');
-            }
-        }
-    });
+header p {
+    color: #94a3b8;
+}
 
-    // Funcionalidade de Pesquisa de Danos
-    const searchBtn = document.getElementById('search-btn');
-    const searchInput = document.getElementById('damage-search-input');
-    const selectCar = document.getElementById('select-car-model');
-    const resultsContainer = document.getElementById('search-results');
+.card {
+    background: rgba(30, 41, 59, 0.88);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
 
-    searchBtn.addEventListener('click', () => {
-        const selectedModel = selectCar.value;
-        const query = searchInput.value.toLowerCase().trim();
+.card h2 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
-        if (!selectedModel) {
-            resultsContainer.innerHTML = '<p style="color: #f87171;">Por favor, selecione um modelo de carro na lista acima.</p>';
-            return;
-        }
+.form-group {
+    margin-bottom: 15px;
+}
 
-        const customDamages = getStoredDamages();
-        const allDamages = [...baseDamageDatabase, ...customDamages];
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #cbd5e1;
+    font-size: 0.9rem;
+}
 
-        const filtered = allDamages.filter(item => {
-            const matchModel = item.model.toLowerCase() === selectedModel.toLowerCase();
-            const matchQuery = query === "" || item.damage.toLowerCase().includes(query) || item.repair.toLowerCase().includes(query);
-            return matchModel && matchQuery;
-        });
+input, select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #475569;
+    background: #0f172a;
+    color: #fff;
+    font-size: 1rem;
+}
 
-        if (filtered.length > 0) {
-            resultsContainer.innerHTML = filtered.map(item => `
-                <div class="damage-card">
-                    <h3><i class="fa-solid fa-triangle-exclamation"></i> ${item.damage}</h3>
-                    <p><strong>Severidade:</strong> ${item.severity} &nbsp;|&nbsp; <strong>Custo Estimado:</strong> ${item.cost}</p>
-                    <div class="repair-guide">
-                        <strong>Como Reparar:</strong> ${item.repair}
-                    </div>
-                </div>
-            `).join('');
-        } else {
-            // Se o usuário buscou um carro recém cadastrado que não tem danos na base, criamos um registro automático de exemplo
-            resultsContainer.innerHTML = `
-                <div class="damage-card" style="border-left-color: #fbbf24;">
-                    <h3 style="color: #fbbf24;">Nenhum dano específico encontrado para "${query || 'geral'}" em ${selectedModel}</h3>
-                    <p>Deseja registrar um modelo padrão de análise para este veículo?</p>
-                    <button id="auto-create-damage" class="btn" style="margin-top: 8px; padding: 6px 12px; font-size: 0.9rem;">
-                        <i class="fa-solid fa-plus"></i> Gerar Dados de Exemplo para ${selectedModel}
-                    </button>
-                </div>
-            `;
+input:focus, select:focus {
+    outline: none;
+    border-color: #38bdf8;
+}
 
-            const autoBtn = document.getElementById('auto-create-damage');
-            if (autoBtn) {
-                autoBtn.addEventListener('click', () => {
-                    const newDmg = {
-                        model: selectedModel,
-                        damage: query || 'Revisão geral de amassados e riscos',
-                        severity: 'Moderada',
-                        cost: 'R$ 600,00',
-                        repair: 'Inspeção visual detalhada, alinhamento de peças plásticas/metálicas e polimento corretivo.'
-                    };
-                    saveCustomDamage(newDmg);
-                    alert('Dados gerados com sucesso! Clique em pesquisar novamente.');
-                    searchBtn.click();
-                });
-            }
-        }
-    });
+.btn {
+    background-color: #0284c7;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
 
-    function getStoredDamages() {
-        const d = localStorage.getItem('user_custom_damages');
-        return d ? JSON.parse(d) : [];
-    }
+.btn:hover {
+    background-color: #0369a1;
+}
 
-    function saveCustomDamage(dmg) {
-        const damages = getStoredDamages();
-        damages.push(dmg);
-        localStorage.setItem('user_custom_damages', JSON.stringify(damages));
-    }
+.search-box {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
 
-    // Funcionalidade de Zoom e Movimento da Imagem (Pan)
-    const zoomImg = document.getElementById('zoom-image');
-    const zoomInBtn = document.getElementById('zoom-in');
-    const zoomOutBtn = document.getElementById('zoom-out');
-    const zoomResetBtn = document.getElementById('zoom-reset');
-    const zoomContainer = document.getElementById('zoom-container');
+.search-box select, .search-box input {
+    flex: 1;
+    min-width: 200px;
+}
 
-    let scale = 1;
-    let pX = 0;
-    let pY = 0;
-    let isDragging = false;
-    let startX, startY;
+.results-container {
+    margin-top: 15px;
+    padding: 15px;
+    background: #0f172a;
+    border-radius: 8px;
+    min-height: 70px;
+    border: 1px solid #334155;
+}
 
-    function updateTransform() {
-        zoomImg.style.transform = `translate(${pX}px, ${pY}px) scale(${scale})`;
-    }
+.damage-card {
+    background: #1e293b;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border-left: 4px solid #38bdf8;
+}
 
-    zoomInBtn.addEventListener('click', () => {
-        scale = Math.min(scale + 0.3, 4);
-        updateTransform();
-    });
+.damage-card h3 {
+    color: #38bdf8;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
 
-    zoomOutBtn.addEventListener('click', () => {
-        scale = Math.max(scale - 0.3, 1);
-        if (scale === 1) { pX = 0; pY = 0; }
-        updateTransform();
-    });
+.damage-card p {
+    margin-bottom: 6px;
+    color: #cbd5e1;
+    font-size: 0.95rem;
+}
 
-    zoomResetBtn.addEventListener('click', () => {
-        scale = 1;
-        pX = 0;
-        pY = 0;
-        updateTransform();
-    });
+.repair-guide {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #475569;
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
 
-    // Zoom com a roda do mouse
-    zoomContainer.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        if (e.deltaY < 0) {
-            scale = Math.min(scale + 0.2, 4);
-        } else {
-            scale = Math.max(scale - 0.2, 1);
-            if (scale === 1) { pX = 0; pY = 0; }
-        }
-        updateTransform();
-    }, { passive: false });
+/* Estilos de Zoom e Pan */
+.zoom-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
 
-    // Arrastar imagem quando estiver com zoom aplicado
-    zoomContainer.addEventListener('mousedown', (e) => {
-        if (scale > 1) {
-            isDragging = true;
-            startX = e.clientX - pX;
-            startY = e.clientY - pY;
-        }
-    });
+.btn-zoom {
+    background: #334155;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
 
-    window.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        pX = e.clientX - startX;
-        pY = e.clientY - startY;
-        updateTransform();
-    });
+.btn-zoom:hover {
+    background: #475569;
+}
 
-    window.addEventListener('mouseup', () => {
-        isDragging = false;
-    });
-});
+.zoom-container {
+    width: 100%;
+    height: 380px;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: grab;
+}
+
+.zoom-container:active {
+    cursor: grabbing;
+}
+
+#zoom-image {
+    max-width: 100%;
+    max-height: 100%;
+    transition: transform 0.05s ease-out;
+    transform-origin: center center;
+    user-select: none;
+    pointer-events: none;
+}

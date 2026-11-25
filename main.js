@@ -1,230 +1,236 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+document.addEventListener('DOMContentLoaded', () => {
+    // Carros padrão iniciais
+    const defaultCars = [
+        { brand: "Chevrolet", model: "Onix", year: 2021 },
+        { brand: "Toyota", model: "Corolla", year: 2022 }
+    ];
 
-body {
-    background-color: #0f172a;
-    color: #f8fafc;
-    min-height: 100vh;
-    overflow-x: hidden;
-    position: relative;
-}
+    // Danos padrão para os carros iniciais
+    const defaultDamages = [
+        { model: "Onix", damage: "para-choque dianteiro riscado", severity: "Leve", cost: "R$ 450,00", repair: "Lixamento da área, aplicação de primer e pintura automotiva." },
+        { model: "Onix", damage: "farol quebrado", severity: "Médio", cost: "R$ 800,00", repair: "Substituição do conjunto óptico e regulagem de foco." },
+        { model: "Corolla", damage: "amassado na lateral porta", severity: "Alto", cost: "R$ 1.200,00", repair: "Funilaria, repuxamento de chapa e pintura completa da porta." },
+        { model: "Corolla", damage: "retrovisor solto", severity: "Leve", cost: "R$ 300,00", repair: "Reaperto de parafusos de fixação ou troca da base interna." }
+    ];
 
-/* Fundo Animado - Carros Voando */
-.flying-cars-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: -1;
-    overflow: hidden;
-}
+    // Funções de Gerenciamento do LocalStorage (Carros)
+    function getStoredCars() {
+        const stored = localStorage.getItem('user_custom_cars');
+        if (!stored) {
+            localStorage.setItem('user_custom_cars', JSON.stringify(defaultCars));
+            return defaultCars;
+        }
+        return JSON.parse(stored);
+    }
 
-.car-fly {
-    position: absolute;
-    color: rgba(56, 189, 248, 0.12);
-    font-size: 3rem;
-    animation: flyAcross 14s linear infinite;
-}
+    function saveCarToStorage(car) {
+        const cars = getStoredCars();
+        // Verifica se já existe ignorando maiúsculas/minúsculas
+        const exists = cars.some(c => c.model.toLowerCase() === car.model.toLowerCase());
+        if (!exists) {
+            cars.push(car);
+            localStorage.setItem('user_custom_cars', JSON.stringify(cars));
+            return true;
+        }
+        return false;
+    }
 
-.car-1 { top: 15%; animation-duration: 16s; animation-delay: 0s; }
-.car-2 { top: 45%; animation-duration: 10s; animation-delay: 3s; font-size: 2.5rem; }
-.car-3 { top: 75%; animation-duration: 20s; animation-delay: 1s; font-size: 3.5rem; }
+    // Funções de Gerenciamento do LocalStorage (Danos)
+    function getStoredDamages() {
+        const stored = localStorage.getItem('user_custom_damages');
+        if (!stored) {
+            localStorage.setItem('user_custom_damages', JSON.stringify(defaultDamages));
+            return defaultDamages;
+        }
+        return JSON.parse(stored);
+    }
 
-@keyframes flyAcross {
-    0% { transform: translateX(-150px) rotate(0deg); opacity: 0; }
-    15% { opacity: 0.25; }
-    85% { opacity: 0.25; }
-    100% { transform: translateX(calc(100vw + 150px)) rotate(5deg); opacity: 0; }
-}
+    function saveCustomDamage(dmg) {
+        const damages = getStoredDamages();
+        damages.push(dmg);
+        localStorage.setItem('user_custom_damages', JSON.stringify(damages));
+    }
 
-.container {
-    max-width: 800px;
-    margin: 30px auto;
-    padding: 20px;
-    position: relative;
-    z-index: 1;
-}
+    // Atualizar o seletor mantendo a seleção atual se possível
+    function updateCarSelect(keepValue = "") {
+        const select = document.getElementById('select-car-model');
+        const cars = getStoredCars();
+        
+        select.innerHTML = '<option value="">Selecione o modelo do carro</option>';
+        
+        cars.forEach(c => {
+            const option = document.createElement('option');
+            option.value = c.model;
+            option.textContent = `${c.brand} ${c.model} (${c.year})`;
+            select.appendChild(option);
+        });
 
-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
+        if (keepValue) {
+            select.value = keepValue;
+        }
+    }
 
-header h1 {
-    font-size: 2.2rem;
-    color: #38bdf8;
-    margin-bottom: 10px;
-}
+    // Inicialização ao carregar a página
+    getStoredCars();
+    getStoredDamages();
+    updateCarSelect();
 
-header p {
-    color: #94a3b8;
-}
+    // Evento de cadastro de carro
+    const carForm = document.getElementById('car-form');
+    carForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const brand = document.getElementById('car-brand').value.trim();
+        const model = document.getElementById('car-model').value.trim();
+        const year = document.getElementById('car-year').value.trim();
 
-.card {
-    background: rgba(30, 41, 59, 0.88);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 25px;
-    margin-bottom: 25px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-}
+        if (brand && model && year) {
+            const added = saveCarToStorage({ brand, model, year });
+            
+            // Adiciona automaticamente um dano genérico inicial para o carro novo não ficar vazio
+            saveCustomDamage({
+                model: model,
+                damage: "Revisão geral de pintura e estrutura",
+                severity: "Moderada",
+                cost: "R$ 500,00",
+                repair: "Inspeção completa, polimento de pequenos riscos e verificação de alinhamento."
+            });
 
-.card h2 {
-    font-size: 1.4rem;
-    margin-bottom: 20px;
-    color: #e2e8f0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+            updateCarSelect(model); // Mantém o novo carro selecionado no menu suspenso imediatamente
+            carForm.reset();
+            alert(`Modelo "${model}" salvo com sucesso e selecionado para pesquisa!`);
+        } else {
+            alert('Por favor, preencha todos os campos do carro.');
+        }
+    });
 
-.form-group {
-    margin-bottom: 15px;
-}
+    // Evento de Pesquisa de Danos
+    const searchBtn = document.getElementById('search-btn');
+    const searchInput = document.getElementById('damage-search-input');
+    const selectCar = document.getElementById('select-car-model');
+    const resultsContainer = document.getElementById('search-results');
 
-label {
-    display: block;
-    margin-bottom: 5px;
-    color: #cbd5e1;
-    font-size: 0.9rem;
-}
+    searchBtn.addEventListener('click', () => {
+        const selectedModel = selectCar.value;
+        const query = searchInput.value.toLowerCase().trim();
 
-input, select {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #475569;
-    background: #0f172a;
-    color: #fff;
-    font-size: 1rem;
-}
+        if (!selectedModel) {
+            resultsContainer.innerHTML = '<p style="color: #f87171;">Por favor, selecione um modelo de carro na lista acima antes de pesquisar.</p>';
+            return;
+        }
 
-input:focus, select:focus {
-    outline: none;
-    border-color: #38bdf8;
-}
+        const allDamages = getStoredDamages();
 
-.btn {
-    background-color: #0284c7;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1rem;
-    transition: background 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
+        const filtered = allDamages.filter(item => {
+            const matchModel = item.model.toLowerCase() === selectedModel.toLowerCase();
+            const matchQuery = query === "" || item.damage.toLowerCase().includes(query) || item.repair.toLowerCase().includes(query);
+            return matchModel && matchQuery;
+        });
 
-.btn:hover {
-    background-color: #0369a1;
-}
+        if (filtered.length > 0) {
+            resultsContainer.innerHTML = filtered.map(item => `
+                <div class="damage-card">
+                    <h3><i class="fa-solid fa-triangle-exclamation"></i> ${item.damage}</h3>
+                    <p><strong>Severidade:</strong> ${item.severity} &nbsp;|&nbsp; <strong>Custo Estimado:</strong> ${item.cost}</p>
+                    <div class="repair-guide">
+                        <strong>Como Reparar:</strong> ${item.repair}
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            resultsContainer.innerHTML = `
+                <div class="damage-card" style="border-left-color: #fbbf24;">
+                    <h3 style="color: #fbbf24;">Nenhum dano cadastrado para "${query || 'geral'}" neste modelo.</h3>
+                    <p>Deseja adicionar um novo registro de dano para este veículo?</p>
+                    <button id="add-new-damage-btn" class="btn" style="margin-top: 8px; padding: 6px 12px; font-size: 0.9rem;">
+                        <i class="fa-solid fa-plus"></i> Adicionar Dano Personalizado
+                    </button>
+                </div>
+            `;
 
-.search-box {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 15px;
-}
+            const addDmgBtn = document.getElementById('add-new-damage-btn');
+            if (addDmgBtn) {
+                addDmgBtn.addEventListener('click', () => {
+                    const customDesc = prompt("Descreva o dano encontrado (ex: Arranho na porta):", query || "Dano na lataria");
+                    if (customDesc) {
+                        saveCustomDamage({
+                            model: selectedModel,
+                            damage: customDesc,
+                            severity: "Média",
+                            cost: "R$ 400,00",
+                            repair: "Avaliação técnica profissional necessária para o reparo específico."
+                        });
+                        alert("Dano adicionado com sucesso!");
+                        searchBtn.click();
+                    }
+                });
+            }
+        }
+    });
 
-.search-box select, .search-box input {
-    flex: 1;
-    min-width: 200px;
-}
+    // Funcionalidade de Zoom e Movimento da Imagem (Pan)
+    const zoomImg = document.getElementById('zoom-image');
+    const zoomInBtn = document.getElementById('zoom-in');
+    const zoomOutBtn = document.getElementById('zoom-out');
+    const zoomResetBtn = document.getElementById('zoom-reset');
+    const zoomContainer = document.getElementById('zoom-container');
 
-.results-container {
-    margin-top: 15px;
-    padding: 15px;
-    background: #0f172a;
-    border-radius: 8px;
-    min-height: 70px;
-    border: 1px solid #334155;
-}
+    let scale = 1;
+    let pX = 0;
+    let pY = 0;
+    let isDragging = false;
+    let startX, startY;
 
-.damage-card {
-    background: #1e293b;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 12px;
-    border-left: 4px solid #38bdf8;
-}
+    function updateTransform() {
+        zoomImg.style.transform = `translate(${pX}px, ${pY}px) scale(${scale})`;
+    }
 
-.damage-card h3 {
-    color: #38bdf8;
-    margin-bottom: 8px;
-    font-size: 1.1rem;
-}
+    zoomInBtn.addEventListener('click', () => {
+        scale = Math.min(scale + 0.3, 4);
+        updateTransform();
+    });
 
-.damage-card p {
-    margin-bottom: 6px;
-    color: #cbd5e1;
-    font-size: 0.95rem;
-}
+    zoomOutBtn.addEventListener('click', () => {
+        scale = Math.max(scale - 0.3, 1);
+        if (scale === 1) { pX = 0; pY = 0; }
+        updateTransform();
+    });
 
-.repair-guide {
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px dashed #475569;
-    color: #94a3b8;
-    font-size: 0.9rem;
-}
+    zoomResetBtn.addEventListener('click', () => {
+        scale = 1;
+        pX = 0;
+        pY = 0;
+        updateTransform();
+    });
 
-/* Estilos de Zoom e Pan */
-.zoom-controls {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-}
+    // Zoom com a roda do mouse
+    zoomContainer.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (e.deltaY < 0) {
+            scale = Math.min(scale + 0.2, 4);
+        } else {
+            scale = Math.max(scale - 0.2, 1);
+            if (scale === 1) { pX = 0; pY = 0; }
+        }
+        updateTransform();
+    }, { passive: false });
 
-.btn-zoom {
-    background: #334155;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-}
+    // Arrastar imagem quando estiver com zoom aplicado
+    zoomContainer.addEventListener('mousedown', (e) => {
+        if (scale > 1) {
+            isDragging = true;
+            startX = e.clientX - pX;
+            startY = e.clientY - pY;
+        }
+    });
 
-.btn-zoom:hover {
-    background: #475569;
-}
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        pX = e.clientX - startX;
+        pY = e.clientY - startY;
+        updateTransform();
+    });
 
-.zoom-container {
-    width: 100%;
-    height: 380px;
-    overflow: hidden;
-    border-radius: 8px;
-    background: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    cursor: grab;
-}
-
-.zoom-container:active {
-    cursor: grabbing;
-}
-
-#zoom-image {
-    max-width: 100%;
-    max-height: 100%;
-    transition: transform 0.05s ease-out;
-    transform-origin: center center;
-    user-select: none;
-    pointer-events: none;
-}
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+});

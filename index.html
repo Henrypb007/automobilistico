@@ -20,7 +20,7 @@
     <div class="container">
         <header>
             <h1><i class="fa-solid fa-car-burst"></i> Análise de Danos Veiculares</h1>
-            <p>Pesquise danos, adicione seu modelo de veículo personalizado e visualize diagramas detalhados.</p>
+            <p>Cadastre seu veículo, pesquise danos com guia de reparo e visualize diagramas detalhados.</p>
         </header>
 
         <!-- Seção de Cadastro de Novo Modelo -->
@@ -29,15 +29,15 @@
             <form id="car-form">
                 <div class="form-group">
                     <label for="car-brand">Marca:</label>
-                    <input type="text" id="car-brand" placeholder="Ex: Chevrolet, Toyota, Volkswagen..." required>
+                    <input type="text" id="car-brand" placeholder="Ex: Ford, Fiat, Honda..." required>
                 </div>
                 <div class="form-group">
                     <label for="car-model">Modelo:</label>
-                    <input type="text" id="car-model" placeholder="Ex: Onix, Corolla, Gol..." required>
+                    <input type="text" id="car-model" placeholder="Ex: Civic, Ka, Argo..." required>
                 </div>
                 <div class="form-group">
                     <label for="car-year">Ano:</label>
-                    <input type="number" id="car-year" placeholder="Ex: 2022" required>
+                    <input type="number" id="car-year" placeholder="Ex: 2023" required>
                 </div>
                 <button type="submit" class="btn"><i class="fa-solid fa-floppy-disk"></i> Salvar Modelo</button>
             </form>
@@ -45,7 +45,7 @@
 
         <!-- Seção de Pesquisa de Danos -->
         <section class="card">
-            <h2><i class="fa-solid fa-magnifying-glass"></i> Pesquisa de Danos</h2>
+            <h2><i class="fa-solid fa-magnifying-glass"></i> Pesquisa de Danos e Como Reparar</h2>
             <div class="search-box">
                 <select id="select-car-model">
                     <option value="">Selecione o modelo do carro</option>
@@ -54,14 +54,14 @@
                 <button id="search-btn" class="btn"><i class="fa-solid fa-search"></i> Pesquisar</button>
             </div>
             <div id="search-results" class="results-container">
-                <p style="color: #94a3b8; text-align: center;">Selecione um veículo e clique em pesquisar.</p>
+                <p style="color: #94a3b8; text-align: center;">Selecione um veículo cadastrado e clique em pesquisar para ver detalhes e instruções de reparo.</p>
             </div>
         </section>
 
         <!-- Seção de Visualização e Zoom -->
         <section class="card">
             <h2><i class="fa-solid fa-image"></i> Diagrama do Veículo com Zoom</h2>
-            <p>Utilize os botões abaixo ou a roda do mouse para ampliar o diagrama. Clique e arraste para mover a imagem ampliada.</p>
+            <p>Utilize os botões abaixo ou a roda do mouse para ampliar o diagrama. Clique e arraste para mover a imagem.</p>
             <div class="zoom-controls">
                 <button id="zoom-in" class="btn-zoom"><i class="fa-solid fa-magnifying-glass-plus"></i> Zoom +</button>
                 <button id="zoom-out" class="btn-zoom"><i class="fa-solid fa-magnifying-glass-minus"></i> Zoom -</button>

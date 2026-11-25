@@ -29,11 +29,11 @@
             <form id="car-form">
                 <div class="form-group">
                     <label for="car-brand">Marca:</label>
-                    <input type="text" id="car-brand" placeholder="Ex: Chevrolet, Toyota..." required>
+                    <input type="text" id="car-brand" placeholder="Ex: Chevrolet, Toyota, Volkswagen..." required>
                 </div>
                 <div class="form-group">
                     <label for="car-model">Modelo:</label>
-                    <input type="text" id="car-model" placeholder="Ex: Onix, Corolla..." required>
+                    <input type="text" id="car-model" placeholder="Ex: Onix, Corolla, Gol..." required>
                 </div>
                 <div class="form-group">
                     <label for="car-year">Ano:</label>
@@ -53,16 +53,18 @@
                 <input type="text" id="damage-search-input" placeholder="Digite o dano (ex: para-choque, arranhão, farol)...">
                 <button id="search-btn" class="btn"><i class="fa-solid fa-search"></i> Pesquisar</button>
             </div>
-            <div id="search-results" class="results-container"></div>
+            <div id="search-results" class="results-container">
+                <p style="color: #94a3b8; text-align: center;">Selecione um veículo e clique em pesquisar.</p>
+            </div>
         </section>
 
         <!-- Seção de Visualização e Zoom -->
         <section class="card">
             <h2><i class="fa-solid fa-image"></i> Diagrama do Veículo com Zoom</h2>
-            <p>Utilize os botões abaixo ou a roda do mouse para ampliar o diagrama de danos.</p>
+            <p>Utilize os botões abaixo ou a roda do mouse para ampliar o diagrama. Clique e arraste para mover a imagem ampliada.</p>
             <div class="zoom-controls">
-                <button id="zoom-in" class="btn-zoom"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
-                <button id="zoom-out" class="btn-zoom"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                <button id="zoom-in" class="btn-zoom"><i class="fa-solid fa-magnifying-glass-plus"></i> Zoom +</button>
+                <button id="zoom-out" class="btn-zoom"><i class="fa-solid fa-magnifying-glass-minus"></i> Zoom -</button>
                 <button id="zoom-reset" class="btn-zoom"><i class="fa-solid fa-rotate-right"></i> Resetar</button>
             </div>
             <div class="zoom-container" id="zoom-container">

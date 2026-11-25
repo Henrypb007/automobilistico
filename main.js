@@ -1,4 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Banco de dados inicial de carros padrão
+    const defaultCars = [
+        { brand: "Chevrolet", model: "Onix", year: 2021 },
+        { brand: "Toyota", model: "Corolla", year: 2022 }
+    ];
+
     // Banco de dados inicial de danos simulados
     const baseDamageDatabase = [
         { model: "Onix", damage: "para-choque dianteiro riscado", cost: "R$ 450,00", severity: "Leve" },
@@ -7,26 +13,31 @@ document.addEventListener('DOMContentLoaded', () => {
         { model: "Corolla", damage: "retrovisor solto", cost: "R$ 300,00", severity: "Leve" }
     ];
 
-    // Carregar modelos salvos no LocalStorage
+    // Gerenciamento de Carros no LocalStorage
     function getStoredCars() {
         const cars = localStorage.getItem('custom_cars');
-        return cars ? JSON.parse(cars) : [
-            { brand: "Chevrolet", model: "Onix", year: 2021 },
-            { brand: "Toyota", model: "Corolla", year: 2022 }
-        ];
+        if (!cars) {
+            localStorage.setItem('custom_cars', JSON.stringify(defaultCars));
+            return defaultCars;
+        }
+        return JSON.parse(cars);
     }
 
     function saveCar(car) {
         const cars = getStoredCars();
-        cars.push(car);
-        localStorage.setItem('custom_cars', JSON.stringify(cars));
+        // Evitar duplicatas exatas de modelo
+        const exists = cars.some(c => c.model.toLowerCase() === car.model.toLowerCase());
+        if (!exists) {
+            cars.push(car);
+            localStorage.setItem('custom_cars', JSON.stringify(cars));
+        }
     }
 
     function updateCarSelect() {
         const select = document.getElementById('select-car-model');
         const cars = getStoredCars();
         
-        // Manter a opção padrão
+        // Preserva a opção padrão e reconstrói o restante com os carros salvos
         select.innerHTML = '<option value="">Selecione o modelo do carro</option>';
         
         cars.forEach(c => {
@@ -37,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Inicializar o select
+    // Inicializar o select imediatamente na abertura da página
     updateCarSelect();
 
     // Evento de cadastro de carro
@@ -52,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
             saveCar({ brand, model, year });
             updateCarSelect();
             carForm.reset();
-            alert('Modelo de carro cadastrado com sucesso!');
+            alert('Modelo de carro cadastrado e salvo com sucesso!');
         }
     });
 
@@ -67,11 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const query = searchInput.value.toLowerCase().trim();
 
         if (!selectedModel) {
-            resultsContainer.innerHTML = '<p style="color: #f87171;">Por favor, selecione um modelo de carro primeiro.</p>';
+            resultsContainer.innerHTML = '<p style="color: #f87171;">Por favor, selecione um modelo de carro na lista.</p>';
             return;
         }
 
-        // Filtrar danos correspondentes
         const customDamages = getStoredDamages();
         const allDamages = [...baseDamageDatabase, ...customDamages];
 
@@ -89,13 +99,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `).join('');
         } else {
-            resultsContainer.innerHTML = `<p style="color: #fbbf24;">Nenhum dano registrado encontrado para "${query || 'geral'}" neste modelo. <button id="add-dummy-damage" style="margin-top:5px;" class="btn-zoom">Adicionar registro</button></p>`;
+            resultsContainer.innerHTML = `
+                <p style="color: #fbbf24; margin-bottom: 10px;">Nenhum registro encontrado para "${query || 'geral'}" neste modelo.</p>
+                <button id="add-dummy-damage" class="btn" style="padding: 6px 12px; font-size: 0.9rem;">
+                    <i class="fa-solid fa-plus"></i> Registrar este dano para ${selectedModel}
+                </button>
+            `;
             
-            // Permitir registrar um dano genérico caso não exista
             const addBtn = document.getElementById('add-dummy-damage');
             if (addBtn) {
                 addBtn.addEventListener('click', () => {
-                    saveCustomDamage({ model: selectedModel, damage: query || 'Dano geral', cost: 'A consultar', severity: 'Não especificada' });
+                    saveCustomDamage({ 
+                        model: selectedModel, 
+                        damage: query || 'Dano geral informado pelo usuário', 
+                        cost: 'Sob orçamento', 
+                        severity: 'Moderada' 
+                    });
+                    alert('Dano cadastrado com sucesso! Clique em pesquisar novamente.');
                     searchBtn.click();
                 });
             }
@@ -113,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('custom_damages', JSON.stringify(damages));
     }
 
-    // Funcionalidade de Zoom Totalmente Operacional
+    // Funcionalidade de Zoom e Pan (Arraste) Totalmente Operacional
     const zoomImg = document.getElementById('zoom-image');
     const zoomInBtn = document.getElementById('zoom-in');
     const zoomOutBtn = document.getElementById('zoom-out');
@@ -131,12 +151,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     zoomInBtn.addEventListener('click', () => {
-        scale = Math.min(scale + 0.25, 3);
+        scale = Math.min(scale + 0.3, 4);
         updateTransform();
     });
 
     zoomOutBtn.addEventListener('click', () => {
-        scale = Math.max(scale - 0.25, 1);
+        scale = Math.max(scale - 0.3, 1);
         if (scale === 1) { pX = 0; pY = 0; }
         updateTransform();
     });
@@ -148,19 +168,19 @@ document.addEventListener('DOMContentLoaded', () => {
         updateTransform();
     });
 
-    // Zoom via roda do mouse
+    // Zoom via roda do mouse com foco no centro
     zoomContainer.addEventListener('wheel', (e) => {
         e.preventDefault();
         if (e.deltaY < 0) {
-            scale = Math.min(scale + 0.15, 3);
+            scale = Math.min(scale + 0.2, 4);
         } else {
-            scale = Math.max(scale - 0.15, 1);
+            scale = Math.max(scale - 0.2, 1);
             if (scale === 1) { pX = 0; pY = 0; }
         }
         updateTransform();
-    });
+    }, { passive: false });
 
-    // Arrastar imagem com zoom aplicado (Pan)
+    // Funcionalidade de arrastar imagem (Pan) quando ampliada
     zoomContainer.addEventListener('mousedown', (e) => {
         if (scale > 1) {
             isDragging = true;

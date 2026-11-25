@@ -20,7 +20,7 @@
     <div class="container">
         <header>
             <h1><i class="fa-solid fa-car-burst"></i> Análise de Danos Veiculares</h1>
-            <p>Cadastre seu veículo, pesquise danos com guia de reparo e visualize diagramas detalhados.</p>
+            <p>Cadastre seu veículo, consulte danos com guia de reparo e visualize diagramas detalhados.</p>
         </header>
 
         <!-- Seção de Cadastro de Novo Modelo -->
@@ -29,15 +29,15 @@
             <form id="car-form">
                 <div class="form-group">
                     <label for="car-brand">Marca:</label>
-                    <input type="text" id="car-brand" placeholder="Ex: Ford, Fiat, Honda..." required>
+                    <input type="text" id="car-brand" placeholder="Ex: Volkswagen, Honda, Fiat..." required>
                 </div>
                 <div class="form-group">
                     <label for="car-model">Modelo:</label>
-                    <input type="text" id="car-model" placeholder="Ex: Civic, Ka, Argo..." required>
+                    <input type="text" id="car-model" placeholder="Ex: Gol, Civic, Uno..." required>
                 </div>
                 <div class="form-group">
                     <label for="car-year">Ano:</label>
-                    <input type="number" id="car-year" placeholder="Ex: 2023" required>
+                    <input type="number" id="car-year" placeholder="Ex: 2022" required>
                 </div>
                 <button type="submit" class="btn"><i class="fa-solid fa-floppy-disk"></i> Salvar Modelo</button>
             </form>
@@ -50,11 +50,11 @@
                 <select id="select-car-model">
                     <option value="">Selecione o modelo do carro</option>
                 </select>
-                <input type="text" id="damage-search-input" placeholder="Digite o dano (ex: para-choque, arranhão, farol)...">
+                <input type="text" id="damage-search-input" placeholder="Digite o dano (ex: para-choque, arranhão)...">
                 <button id="search-btn" class="btn"><i class="fa-solid fa-search"></i> Pesquisar</button>
             </div>
             <div id="search-results" class="results-container">
-                <p style="color: #94a3b8; text-align: center;">Selecione um veículo cadastrado e clique em pesquisar para ver detalhes e instruções de reparo.</p>
+                <p style="color: #94a3b8; text-align: center;">Selecione um veículo na lista acima e clique em pesquisar.</p>
             </div>
         </section>
 

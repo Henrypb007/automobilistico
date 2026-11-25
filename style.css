@@ -27,19 +27,19 @@ body {
 
 .car-fly {
     position: absolute;
-    color: rgba(56, 189, 248, 0.15);
+    color: rgba(56, 189, 248, 0.12);
     font-size: 3rem;
-    animation: flyAcross 15s linear infinite;
+    animation: flyAcross 14s linear infinite;
 }
 
-.car-1 { top: 15%; animation-duration: 18s; animation-delay: 0s; }
-.car-2 { top: 50%; animation-duration: 12s; animation-delay: 4s; font-size: 2.5rem; }
-.car-3 { top: 75%; animation-duration: 22s; animation-delay: 2s; font-size: 3.5rem; }
+.car-1 { top: 15%; animation-duration: 16s; animation-delay: 0s; }
+.car-2 { top: 45%; animation-duration: 10s; animation-delay: 3s; font-size: 2.5rem; }
+.car-3 { top: 75%; animation-duration: 20s; animation-delay: 1s; font-size: 3.5rem; }
 
 @keyframes flyAcross {
     0% { transform: translateX(-150px) rotate(0deg); opacity: 0; }
-    10% { opacity: 0.3; }
-    90% { opacity: 0.3; }
+    15% { opacity: 0.25; }
+    85% { opacity: 0.25; }
     100% { transform: translateX(calc(100vw + 150px)) rotate(5deg); opacity: 0; }
 }
 
@@ -67,7 +67,7 @@ header p {
 }
 
 .card {
-    background: rgba(30, 41, 59, 0.85);
+    background: rgba(30, 41, 59, 0.88);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
@@ -147,19 +147,39 @@ input:focus, select:focus {
     padding: 15px;
     background: #0f172a;
     border-radius: 8px;
-    min-height: 60px;
+    min-height: 70px;
+    border: 1px solid #334155;
 }
 
-.damage-item {
-    padding: 10px 0;
-    border-bottom: 1px solid #334155;
+.damage-card {
+    background: #1e293b;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border-left: 4px solid #38bdf8;
 }
 
-.damage-item:last-child {
-    border-bottom: none;
+.damage-card h3 {
+    color: #38bdf8;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
 }
 
-/* Estilos de Zoom */
+.damage-card p {
+    margin-bottom: 6px;
+    color: #cbd5e1;
+    font-size: 0.95rem;
+}
+
+.repair-guide {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #475569;
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+/* Estilos de Zoom e Pan */
 .zoom-controls {
     display: flex;
     gap: 10px;
